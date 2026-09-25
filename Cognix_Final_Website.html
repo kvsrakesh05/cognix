@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cognix — Unified Health Portal</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7fa;color:#17324d}
+button,input,select,textarea{font:inherit}.hidden{display:none!important}
+.auth{min-height:100vh;background:#f4f7fa;display:flex;align-items:center;justify-content:center;padding:30px}
+.authbox{width:min(1050px,100%);background:#fff;border:1px solid #d7e1e8;border-radius:18px;box-shadow:0 8px 30px #17324d14;overflow:hidden}
+.authhead{padding:28px 34px;border-bottom:1px solid #e7edf2}.brand{font-size:30px;font-weight:700;color:#12344d}.tag{color:#627d98;font-size:13px;margin-top:5px}
+.rolegrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:28px 34px}.role{border:1px solid #d7e1e8;border-radius:14px;padding:28px;cursor:pointer;transition:.15s;background:#fff}.role:hover{border-color:#245879;transform:translateY(-2px)}
+.role h2{margin:10px 0 8px}.role p{color:#627d98;line-height:1.55;font-size:14px}.roleicon{width:48px;height:48px;border-radius:10px;background:#e7f0f6;color:#245879;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold}
+.authform{max-width:520px;margin:28px auto;padding:28px}.back{border:0;background:none;color:#245879;cursor:pointer;padding:0;margin-bottom:18px}.authform h2{margin:0 0 6px}.muted{color:#627d98;font-size:13px;line-height:1.55}
+label{display:block;font-size:13px;font-weight:bold;margin:12px 0 6px}input,select,textarea{width:100%;padding:10px;border:1px solid #b9c9d6;border-radius:8px;outline:none}input:focus,select:focus,textarea:focus{border-color:#245879}
+.btn{border:0;border-radius:8px;padding:11px 15px;margin:8px 6px 0 0;cursor:pointer;font-weight:bold}.primary{background:#245879;color:white}.secondary{background:#e5edf3;color:#203b50}.danger{background:#c52d2d;color:white}
+.note{background:#f5f8fa;border:1px solid #d7e1e8;border-radius:9px;padding:12px;font-size:12px;color:#627d98;margin:12px 0}
+.step{display:flex;gap:8px;margin:15px 0}.step span{width:25px;height:25px;border-radius:50%;background:#245879;color:white;text-align:center;padding-top:4px;font-size:12px}.otp{letter-spacing:8px;font-weight:bold}
+
+.app{min-height:100vh}.side{position:fixed;inset:0 auto 0 0;width:235px;background:#12344d;color:white;padding:25px 15px;overflow:auto}.logo{font-size:29px;font-weight:bold}.sub{font-size:12px;color:#b9c9d6;margin:5px 0 28px}.nav button{display:block;width:100%;border:0;background:none;color:#dce7ee;text-align:left;padding:12px;border-radius:8px;margin:3px 0;cursor:pointer}.nav button:hover,.nav button.active{background:#255a7d;color:#fff}
+.main{margin-left:235px;padding:28px 34px}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.head h1{margin:0;font-size:28px}.user{background:#fff;border:1px solid #d7e1e8;border-radius:20px;padding:9px 14px;font-size:13px}.page{display:none}.page.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.two{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}.card{background:#fff;border:1px solid #d7e1e8;border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 2px 7px #17324d0d}.stat{font-size:27px;font-weight:bold;margin:7px 0}.pill{display:inline-block;padding:5px 10px;border-radius:20px;background:#e7f0f6;color:#245879;font-size:12px;margin:2px}.good{background:#e7f5ed;color:#176b43}.warn{background:#fff3d5;color:#815900}.bad{background:#fdeaea;color:#a51d1d}
+.feature{display:flex;gap:12px;margin:15px 0}.icon{width:34px;height:34px;min-width:34px;border-radius:8px;background:#e7f0f6;color:#245879;display:flex;align-items:center;justify-content:center;font-weight:bold}
+textarea{min-height:90px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:15px}.record{display:flex;justify-content:space-between;align-items:center;border:1px solid #d7e1e8;border-radius:9px;padding:13px;margin:9px 0}.summary{display:grid;grid-template-columns:190px 1fr;border-top:1px solid #e7edf2}.summary div{padding:10px;border-bottom:1px solid #e7edf2}.key{font-weight:bold;color:#486581}.timeline{border-left:2px solid #bcccdc;padding-left:18px}.event{margin-bottom:18px}.event b{display:block}.qr{width:145px;height:145px;border:10px solid white;box-shadow:0 0 0 1px #bcccdc;background:repeating-linear-gradient(45deg,#111 0 4px,#fff 4px 8px)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;border-bottom:1px solid #e7edf2;font-size:13px}.status{font-weight:bold}.topline{display:flex;justify-content:space-between;gap:10px;align-items:center}.doctorbar{background:#fff;border:1px solid #d7e1e8;padding:10px 14px;border-radius:9px;margin-bottom:18px}
+@media(max-width:850px){.side{position:static;width:100%;height:auto}.main{margin-left:0;padding:20px}.grid,.rolegrid,.two{grid-template-columns:1fr}.nav{display:grid;grid-template-columns:1fr 1fr}.auth{padding:12px}}
+</style>
+
+<style>
+.brand::after{content:" — Where Intelligence Meets Healthcare";font-size:12px;font-weight:600;color:#627d98;margin-left:8px}
+.card h2,.card h3{color:#17324d}
+#recordUpload{padding:8px;background:#f7fafc}
+.summary{grid-template-columns:210px 1fr}
+.summary div{word-break:break-word}
+</style>
+</head>
+<body>
+
+<div id="auth" class="auth">
+  <div class="authbox">
+    <div class="authhead"><div class="brand">Cognix</div><div class="tag">Unified patient-controlled health records</div></div>
+
+    <div id="roleScreen">
+      <div style="padding:28px 34px 0"><h1 style="margin:0 0 6px">Welcome to Cognix</h1><div class="muted">Choose how you want to access the platform.</div></div>
+      <div class="rolegrid">
+        <div class="role" onclick="showPatientLogin()">
+          <div class="roleicon">P</div><h2>Patient</h2>
+          <p>Sign in with Aadhaar or create your Cognix account for the first time using Aadhaar verification.</p>
+          <button class="btn primary">Continue as Patient</button>
+        </div>
+        <div class="role" onclick="showDoctorLogin()">
+          <div class="roleicon">D</div><h2>Doctor</h2>
+          <p>Access authorized patient information, diagnostic documents, AYUSH assessments and the unified case sheet.</p>
+          <button class="btn primary">Continue as Doctor</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="patientLogin" class="authform hidden">
+      <button class="back" onclick="backRoles()">← Back</button>
+      <h2>Patient sign in</h2><div class="muted">Use your Aadhaar number to identify your Cognix account.</div>
+      <label>Aadhaar number</label><input id="aadhaar" maxlength="12" placeholder="Enter 12-digit Aadhaar number">
+      <label>Password</label><input id="patientPass" type="password" placeholder="Enter password">
+      <button class="btn primary" onclick="patientSignIn()">Sign in</button>
+      <button class="btn secondary" onclick="showSignup()">First time? Sign up with Aadhaar</button>
+      <div class="note">Demo only: do not enter a real Aadhaar number here.</div>
+      <div id="patientMsg" class="muted"></div>
+    </div>
+
+    <div id="patientSignup" class="authform hidden">
+      <button class="back" onclick="showPatientLogin()">← Back to sign in</button>
+      <h2>First-time patient registration</h2><div class="muted">Aadhaar is used to check whether a Cognix account already exists.</div>
+      <div class="step"><span>1</span><div><b>Enter Aadhaar</b><div class="muted">Cognix checks account registration status.</div></div></div>
+      <label>Aadhaar number</label><input id="signupAadhaar" maxlength="12" placeholder="Enter 12-digit Aadhaar number">
+      <button class="btn primary" onclick="checkAadhaar()">Check & continue</button>
+      <div id="signupMsg" class="muted"></div>
+      <div id="otpBox" class="hidden">
+        <div class="step"><span>2</span><div><b>Verify linked mobile</b><div class="muted">Demo OTP sent to the mobile number linked with Aadhaar.</div></div></div>
+        <label>Demo OTP</label><input id="otp" class="otp" maxlength="6" placeholder="123456">
+        <div class="row"><div><label>Create password</label><input id="newPass" type="password" placeholder="Create password"></div><div><label>Confirm password</label><input id="newPass2" type="password" placeholder="Confirm password"></div></div>
+        <button class="btn primary" onclick="completeSignup()">Verify & create account</button>
+      </div>
+    </div>
+
+    <div id="doctorLogin" class="authform hidden">
+      <button class="back" onclick="backRoles()">← Back</button>
+      <h2>Doctor sign in</h2><div class="muted">Doctor workspace for authorized patient records.</div>
+      <label>Doctor ID</label><input id="doctorId" placeholder="e.g. DOC-1024">
+      <label>Password</label><input id="doctorPass" type="password" placeholder="Enter password">
+      <button class="btn primary" onclick="doctorSignIn()">Sign in</button>
+      <div class="note">Demo credentials: Doctor ID <b>DOC-1024</b> and any password.</div>
+      <div id="doctorMsg" class="muted"></div>
+    </div>
+  </div>
+</div>
+
+
+<div id="patientApp" class="app hidden">
+<aside class="side">
+  <div class="logo">Cognix</div><div class="sub">Patient Portal</div>
+  <div class="nav">
+    <button class="active" onclick="showPage('p-overview',this)">Overview</button>
+    <button onclick="showPage('p-checkin',this)">Check-in</button>
+    <button onclick="showPage('p-profile',this)">My Profile</button>
+    <button onclick="showPage('p-records',this)">Medical Records + OCR</button>
+    <button onclick="showPage('p-ai',this)">AI Case-Taking</button>
+    <button onclick="showPage('p-ayush',this)">AYUSH Mode</button>
+    <button onclick="showPage('p-access',this)">Consent + Doctor Review</button>
+    <button onclick="showPage('p-case',this)">Unified Case Sheet</button>
+    <button onclick="showPage('p-timeline',this)">Timeline / Search</button>
+  </div>
+  <button class="btn secondary" onclick="logout()" style="margin-top:25px;width:100%">Sign out</button>
+</aside>
+<main class="main">
+<div class="head"><h1 id="pTitle">Patient Overview</h1><div class="user">Patient • <span id="patientHeaderName">Ananya Rao</span></div></div>
+
+<section id="p-overview" class="page active">
+  <div id="emergencyBanner" class="hidden card" style="border-color:#c52d2d;background:#fff7f7">
+    <b style="color:#a51d1d">⚠ Emergency indicator triggered</b>
+    <div class="muted">A risk keyword was detected in the entered symptoms. This prototype only flags keywords; a clinician must assess the patient.</div>
+    <div id="emergencyTerms" class="pill bad"></div>
+  </div>
+  <div class="doctorbar"><b>Signed in through Aadhaar</b><span class="pill good" style="float:right">Verified account</span>
+    <div class="muted">Your records remain patient-controlled. Doctor access is temporary and consent-based.</div>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="muted">Patient ID</div><div class="stat" id="statPatientId">CNGX-2047</div><span class="pill">ABHA linked</span></div>
+    <div class="card"><div class="muted">Doctor access</div><div id="accessStat" class="stat">Not active</div><span id="accessPill" class="pill">Patient controlled</span></div>
+    <div class="card"><div class="muted">Records</div><div class="stat" id="recordCount">0</div><span class="pill">Unified view</span></div>
+  </div>
+  <div class="two">
+    <div class="card"><h3>Unified health profile</h3>
+      <div class="feature"><div class="icon">B</div><div><b>Blood group</b><div class="muted" id="overviewBlood">O+</div></div></div>
+      <div class="feature"><div class="icon">A</div><div><b>Allergies</b><div class="muted" id="overviewAllergies">None entered</div></div></div>
+      <div class="feature"><div class="icon">F</div><div><b>Family history</b><div class="muted" id="overviewFamily">None entered</div></div></div>
+    </div>
+    <div class="card"><h3>Current complaint</h3><p><b id="overviewComplaint">Not entered</b></p><p class="muted">AI case-taking available</p>
+      <button class="btn primary" onclick="showPage('p-ai',document.querySelectorAll('#patientApp .nav button')[4])">Start case-taking</button>
+    </div>
+  </div>
+  <div class="card"><h3>Recent timeline</h3><div id="overviewTimeline" class="timeline"><div class="muted">Actions will appear here.</div></div></div>
+</section>
+
+<section id="p-checkin" class="page">
+  <div class="card"><h2>Patient arrives</h2><p class="muted">Prototype of an ABHA/ABDM-ready check-in. No live ABDM API is used in this offline browser MVP.</p>
+    <div class="row">
+      <div><label>Patient name</label><input id="patientName" value="Ananya Rao"></div>
+      <div><label>ABHA / Patient ID</label><input id="patientId" value="CNGX-2047"></div>
+    </div>
+    <div class="row">
+      <div><label>Age</label><input id="patientAge" type="number" min="0" max="120" value="42"></div>
+      <div><label>Sex</label><select id="patientSex"><option>Female</option><option>Male</option><option>Other / Not specified</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Preferred language</label><select id="patientLanguage"><option>English</option><option>Hindi</option><option>Telugu</option></select></div>
+      <div><label>Interaction mode</label><select id="assistantMode"><option>Self</option><option>Rural assistant / caregiver</option><option>Elderly-friendly assisted mode</option></select></div>
+    </div>
+    <button class="btn primary" onclick="completeCheckin()">Complete check-in</button>
+    <div id="checkinMsg" class="muted"></div>
+  </div>
+</section>
+
+<section id="p-profile" class="page">
+  <div class="card"><h2>My Profile</h2>
+    <div class="row"><div><label>Name</label><input id="profileName" readonly></div><div><label>Patient ID</label><input id="profileId" readonly></div></div>
+    <div class="row"><div><label>ABHA / Health ID</label><input id="profileAbha" readonly></div><div><label>Blood group</label><input value="O+" readonly></div></div>
+    <label>Allergies</label><input id="profileAllergies" readonly>
+    <label>Family history</label><textarea id="profileFamily" readonly></textarea>
+    <div class="note">Production should use secure authentication, consent, encryption and approved health-data integrations. This browser prototype does not connect to Aadhaar or ABDM.</div>
+  </div>
+</section>
+
+<section id="p-records" class="page">
+  <div class="card"><h2>Old Medical Records + OCR</h2><p class="muted">Upload PDF/image records. PDFs use browser text extraction where supported; images use a local OCR attempt when the browser supports it. You can always correct extracted text manually.</p>
+    <label>Upload prescription / lab report / discharge summary / other document</label>
+    <input id="recordUpload" type="file" multiple accept=".pdf,.png,.jpg,.jpeg">
+    <div id="ocrStatus" class="muted" style="margin-top:8px"></div>
+    <div id="recordsList"></div>
+    <div id="documentAI" class="hidden card" style="background:#f7fafc"><h3>Document AI — quick extraction</h3><div id="medLines"></div></div>
+  </div>
+</section>
+
+<section id="p-ai" class="page">
+  <div class="card"><h2>AI Pre-Consultation / Case-Taking</h2>
+    <p class="muted">Type or speak symptoms. Cognix structures the interview; it does not diagnose.</p>
+    <div class="note">Selected language: <b id="voiceLangLabel">English</b>. Voice input is captured through your browser's speech-recognition support when available.</div>
+    <label>🗣️ Chief complaint</label>
+    <div class="topline"><button class="btn secondary" onclick="startVoice('complaint')">🎙 Start voice input</button><span id="voiceComplaintStatus" class="muted"></span></div>
+    <textarea id="complaint" placeholder="Example: Fever and cough for 3 days"></textarea>
+    <label>📝 History of present illness</label>
+    <div class="topline"><button class="btn secondary" onclick="startVoice('hpi')">🎙 Speak history</button><span id="voiceHpiStatus" class="muted"></span></div>
+    <textarea id="hpi" placeholder="Describe onset, duration, severity, associated symptoms..."></textarea>
+    <button class="btn primary" onclick="generateQuestions()">Generate smart follow-up questions</button>
+    <div id="questions" class="hidden"><h3>🤖 Smart follow-up questions</h3><div id="qList"></div>
+      <button class="btn primary" onclick="structureInterview()">Structure interview & save</button>
+    </div>
+    <div class="row">
+      <div><label>Current medicines</label><textarea id="medications"></textarea></div>
+      <div><label>Allergies</label><textarea id="allergies"></textarea></div>
+    </div>
+    <div class="row">
+      <div><label>Past medical/surgical history</label><textarea id="history"></textarea></div>
+      <div><label>Family history</label><textarea id="familyHistory"></textarea></div>
+    </div>
+    <div id="aiSaved" class="hidden note"><b>Saved.</b> The AI case-taking summary has been added to the unified case sheet.</div>
+  </div>
+</section>
+
+<section id="p-ayush" class="page">
+  <div class="card"><h2>AYUSH-aware assessment</h2><p class="muted">Captures AYUSH parameters without replacing practitioner assessment.</p>
+    <div class="row"><div><label>Prakriti</label><select id="prakriti"><option>Not assessed</option><option>Vata</option><option>Pitta</option><option>Kapha</option><option>Mixed</option></select></div>
+    <div><label>Vikriti</label><select id="vikriti"><option>Not assessed</option><option>Vata</option><option>Pitta</option><option>Kapha</option><option>Mixed</option></select></div></div>
+    <div class="row"><div><label>Agni</label><select id="agni"><option>Not assessed</option><option>Sama</option><option>Vishama</option><option>Tikshna</option><option>Manda</option></select></div>
+    <div><label>Koshta</label><select id="koshta"><option>Not assessed</option><option>Mridu</option><option>Madhyama</option><option>Krura</option></select></div></div>
+    <div class="row"><div><label>Ahara-Vihara</label><textarea id="ahara"></textarea></div><div><label>Nidana</label><textarea id="nidana"></textarea></div></div>
+    <label>Samprapti</label><textarea id="samprapti"></textarea>
+    <label>Dashavidha Pariksha</label><textarea id="dashavidha"></textarea>
+    <button class="btn primary" onclick="saveAyush()">Save AYUSH assessment</button><span id="ayushMsg" class="muted"></span>
+  </div>
+</section>
+
+<section id="p-access" class="page">
+  <div class="two"><div class="card"><h2>Patient-controlled sharing</h2><p class="muted">You decide which information a doctor can see and for how long.</p>
+    <label><input type="checkbox" id="shareCase" checked style="width:auto"> Unified case summary</label>
+    <label><input type="checkbox" id="shareRecords" style="width:auto"> Previous medical records</label>
+    <label><input type="checkbox" id="shareAyush" style="width:auto"> AYUSH assessment</label>
+    <label><input type="checkbox" id="shareDiagnostics" style="width:auto"> Diagnostic documents</label>
+    <label>Access duration</label><select id="duration"><option>15 minutes</option><option>1 hour</option><option>24 hours</option><option>Until visit ends</option></select>
+    <button class="btn primary" onclick="grantAccess()">Grant / update consent</button><button class="btn danger" onclick="revokeAccess()">Revoke access</button>
+    <div id="accessMsg" class="muted"></div>
+  </div>
+  <div class="card"><h3>Basic medical profile QR</h3><canvas id="qrCanvas" class="qr" width="145" height="145"></canvas>
+    <p class="muted">Demo QR representation. Production should use a secure, expiring access token instead of exposing medical data directly.</p>
+    <button class="btn secondary" onclick="generateQR()">Generate QR</button>
+  </div></div>
+  <div class="card"><h3>Doctor validation</h3><select id="doctorStatus"><option>Pending review</option><option>Needs correction</option><option>Approved</option></select>
+    <button class="btn primary" onclick="saveDoctorReview()">Save doctor review</button>
+  </div>
+</section>
+
+<section id="p-case" class="page">
+  <div class="card"><h2>Unified Doctor-Ready Case Sheet</h2><p class="muted">Combines check-in, AI case-taking, old records, AYUSH assessment, consent and document extraction.</p>
+    <div id="caseSummary" class="summary"></div>
+    <h3>AI-generated doctor overview</h3><div id="aiOverview" class="note">Enter case information to generate the structured overview.</div>
+    <div class="grid">
+      <div class="card"><div class="muted">Uploaded records</div><div class="stat" id="caseRecordCount">0</div></div>
+      <div class="card"><div class="muted">Emergency indicator</div><div class="stat" id="caseEmergency">No keyword flag</div></div>
+      <div class="card"><div class="muted">Consent</div><div class="stat" id="caseConsent">Pending</div></div>
+    </div>
+    <button class="btn secondary" onclick="downloadJSON()">Download case sheet as JSON</button>
+  </div>
+</section>
+
+<section id="p-timeline" class="page">
+  <div class="card"><h2>Search and longitudinal timeline</h2>
+    <input id="searchCase" placeholder="Try: allergy, fever, prakriti, report..." oninput="searchCaseData()">
+    <div id="searchResults" style="margin-top:15px"></div>
+  </div>
+  <div class="card"><h3>Audit / patient timeline</h3><div id="timeline" class="timeline"></div></div>
+</section>
+</main></div>
+
+<div id="doctorApp" class="app hidden">
+<aside class="side"><div class="logo">Cognix</div><div class="sub">Doctor Workspace</div><div class="nav">
+<button class="active" onclick="showDPage('d-overview',this)">Overview</button>
+<button onclick="showDPage('d-patients',this)">Patients</button>
+<button onclick="showDPage('d-case',this)">Unified Case Sheet</button>
+<button onclick="showDPage('d-records',this)">Records</button>
+<button onclick="showDPage('d-ayush',this)">AYUSH</button>
+<button onclick="showDPage('d-audit',this)">Access Audit</button>
+</div><button class="btn secondary" onclick="logout()" style="margin-top:25px;width:100%">Sign out</button></aside>
+<main class="main"><div class="head"><h1 id="dTitle">Doctor Overview</h1><div class="user">Doctor • Dr. Meera Sharma</div></div>
+<section id="d-overview" class="page active">
+<div class="grid"><div class="card"><div class="muted">Active patient</div><div class="stat">1</div><span class="pill good" id="doctorConsentPill">Consent pending</span></div>
+<div class="card"><div class="muted">Shared records</div><div class="stat" id="doctorRecordCount">0</div><span class="pill">Patient controlled</span></div>
+<div class="card"><div class="muted">AYUSH data</div><div class="stat" id="doctorAyushStatus">Available</div><span class="pill">Unified</span></div></div>
+<div class="two"><div class="card"><h2>Authorized patient</h2><div class="record"><div><b id="doctorPatientName">Ananya Rao</b><div class="muted" id="doctorPatientMeta">CNGX-2047 • O+ • Not entered</div></div><span class="pill warn" id="doctorAccessBadge">Access pending</span></div>
+<button class="btn primary" onclick="showDPage('d-case',document.querySelectorAll('#doctorApp .nav button')[2])">Open unified case</button></div>
+<div class="card"><h3>Access scope</h3><p class="muted">Scope is controlled by patient consent and the demo session.</p><span class="pill warn" id="doctorExpiry">Awaiting consent</span></div></div>
+</section>
+<section id="d-patients" class="page"><div class="card"><h2>Patients</h2><p class="muted">Patients appear here after they provide consent through Cognix QR / temporary access.</p>
+<div class="record"><div><b id="doctorPatientName2">Ananya Rao</b><div class="muted" id="doctorPatientId2">CNGX-2047</div></div><button class="btn secondary" onclick="showDPage('d-case',document.querySelectorAll('#doctorApp .nav button')[2])">View</button></div></div></section>
+<section id="d-case" class="page"><div class="card"><h2>Unified Case Sheet</h2><p class="muted">Doctor-ready view combining previous records, AYUSH assessment, AI case-taking and consent state.</p><div id="doctorSummary" class="summary"></div>
+<h3>AI case-taking overview</h3><div id="doctorAI" class="note"></div></div></section>
+<section id="d-records" class="page"><div class="card"><h2>Patient Records</h2><table><thead><tr><th>Type</th><th>Name</th><th>Extraction</th><th>Access</th></tr></thead><tbody id="doctorRecords"></tbody></table></div></section>
+<section id="d-ayush" class="page"><div class="card"><h2>AYUSH Assessment</h2><div id="doctorAyush" class="summary"></div></div></section>
+<section id="d-audit" class="page"><div class="card"><h2>Access Audit</h2><div id="doctorAudit" class="timeline"></div></div></section>
+</main></div>
+
+<script>
+/* Cognix browser MVP — functionality ported from app.py */
+const state = {
+  patient:{name:"Ananya Rao",abha:"CNGX-2047",age:42,sex:"Female",language:"English",assistantMode:"Self"},
+  chief_complaint:"", hpi:"", medications:"", allergies:"", history:"", family_history:"",
+  ayush:{prakriti:"Not assessed",vikriti:"Not assessed",agni:"Not assessed",koshta:"Not assessed",ahara_vihara:"",nidana:"",samprapti:"",dashavidha:""},
+  records:[], consent:false, doctor_status:"Pending review", duration:"1 hour", timeline:[], aiStructured:false
+};
+const criticalTerms=["chest pain","difficulty breathing","unconscious","fainted","severe bleeding","seizure","stroke","cannot breathe"];
+
+function addTimeline(event){
+  state.timeline.push({time:new Date().toLocaleTimeString(),event});
+  renderTimeline();
+  renderOverviewTimeline();
+  renderDoctorAudit();
+}
+function detectCritical(text){
+  text=(text||"").toLowerCase();
+  return criticalTerms.filter(x=>text.includes(x));
+}
+function smartFollowups(chief,hpi){
+  const text=(chief+" "+hpi).toLowerCase(), q=[];
+  if(!chief.trim()) return ["What is the main problem bringing you in today?"];
+  q.push("When did this problem start, and has it changed since then?");
+  if(text.includes("pain")) q.push("Where exactly is the pain?","How severe is it on a 0-10 scale?","What makes it better or worse?");
+  if(text.includes("fever")||text.includes("temperature")) q.push("What was the highest measured temperature?","Any chills, cough, rash, or recent infection?");
+  if(["cough","breath","breathing"].some(x=>text.includes(x))) q.push("Any wheezing, chest discomfort, or breathlessness on exertion?");
+  if(["stomach","abdomen","vomit","nausea"].some(x=>text.includes(x))) q.push("Any vomiting, loose stools, appetite change, or relation to meals?");
+  q.push("Are you taking any medicines currently?","Do you have any known drug or food allergies?");
+  return [...new Set(q)].slice(0,6);
+}
+function structuredSummary(){
+  const p=state.patient,a=state.ayush;
+  return {
+    "Patient":`${p.name} | Age ${p.age} | ${p.sex}`,
+    "ABHA / Patient ID":p.abha,
+    "Chief complaint":state.chief_complaint||"Not entered",
+    "History of present illness":state.hpi||"Not entered",
+    "Current medications":state.medications||"None entered",
+    "Allergies":state.allergies||"None entered",
+    "Past history":state.history||"Not entered",
+    "Family history":state.family_history||"Not entered",
+    "AYUSH - Prakriti":a.prakriti,"AYUSH - Vikriti":a.vikriti,"AYUSH - Agni":a.agni,"AYUSH - Koshta":a.koshta,
+    "AYUSH - Ahara-Vihara":a.ahara_vihara||"Not entered","AYUSH - Nidana":a.nidana||"Not entered",
+    "AYUSH - Samprapti / Dashavidha":((a.samprapti+" "+a.dashavidha).trim()||"Not entered"),
+    "Uploaded records":state.records.map(r=>r.name).join(", ")||"None",
+    "Consent":state.consent?"Granted":"Not granted","Doctor review":state.doctor_status
+  };
+}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function summaryHTML(obj){return Object.entries(obj).map(([k,v])=>`<div class="key">${esc(k)}</div><div>${esc(v)}</div>`).join("");}
+
+function syncInputs(){
+  const ids={patientName:state.patient.name,patientId:state.patient.abha,patientAge:state.patient.age,patientSex:state.patient.sex,patientLanguage:state.patient.language,assistantMode:state.patient.assistantMode,
+  complaint:state.chief_complaint,hpi:state.hpi,medications:state.medications,allergies:state.allergies,history:state.history,familyHistory:state.family_history,
+  prakriti:state.ayush.prakriti,vikriti:state.ayush.vikriti,agni:state.ayush.agni,koshta:state.ayush.koshta,ahara:state.ayush.ahara_vihara,nidana:state.ayush.nidana,samprapti:state.ayush.samprapti,dashavidha:state.ayush.dashavidha};
+  Object.entries(ids).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.value=v;});
+  document.getElementById("voiceLangLabel").textContent=state.patient.language;
+  document.getElementById("patientHeaderName").textContent=state.patient.name;
+  document.getElementById("statPatientId").textContent=state.patient.abha;
+}
+function readClinicalInputs(){
+  const get=id=>(document.getElementById(id)?.value||"").trim();
+  state.patient.name=get("patientName")||state.patient.name;
+  state.patient.abha=get("patientId")||state.patient.abha;
+  state.patient.age=Number(get("patientAge"))||state.patient.age;
+  state.patient.sex=get("patientSex")||state.patient.sex;
+  state.patient.language=get("patientLanguage")||state.patient.language;
+  state.patient.assistantMode=get("assistantMode")||state.patient.assistantMode;
+  state.chief_complaint=get("complaint");state.hpi=get("hpi");state.medications=get("medications");state.allergies=get("allergies");state.history=get("history");state.family_history=get("familyHistory");
+  state.ayush={prakriti:get("prakriti"),vikriti:get("vikriti"),agni:get("agni"),koshta:get("koshta"),ahara_vihara:get("ahara"),nidana:get("nidana"),samprapti:get("samprapti"),dashavidha:get("dashavidha")};
+}
+function updateAll(){
+  readClinicalInputs();syncInputs();
+  const matches=detectCritical(state.chief_complaint+" "+state.hpi);
+  const banner=document.getElementById("emergencyBanner");
+  banner.classList.toggle("hidden",!matches.length);
+  document.getElementById("emergencyTerms").textContent=matches.join(" • ");
+  document.getElementById("overviewComplaint").textContent=state.chief_complaint||"Not entered";
+  document.getElementById("overviewAllergies").textContent=state.allergies||"None entered";
+  document.getElementById("overviewFamily").textContent=state.family_history||"None entered";
+  document.getElementById("recordCount").textContent=state.records.length;
+  document.getElementById("caseRecordCount").textContent=state.records.length;
+  document.getElementById("caseEmergency").textContent=matches.length?"YES":"No keyword flag";
+  document.getElementById("caseConsent").textContent=state.consent?"Granted":"Pending";
+  document.getElementById("profileName").value=state.patient.name;document.getElementById("profileId").value=state.patient.abha;document.getElementById("profileAbha").value=state.patient.abha;document.getElementById("profileAllergies").value=state.allergies||"None entered";document.getElementById("profileFamily").value=state.family_history||"None entered";
+  document.getElementById("caseSummary").innerHTML=summaryHTML(structuredSummary());
+  const overview=`${state.patient.name} presents with ${state.chief_complaint||"an unspecified complaint"}. HPI: ${state.hpi||"not yet documented"}. Current medicines: ${state.medications||"not entered"}. Allergies: ${state.allergies||"not entered"}. AYUSH parameters captured: Prakriti=${state.ayush.prakriti}, Vikriti=${state.ayush.vikriti}, Agni=${state.ayush.agni}.`;
+  document.getElementById("aiOverview").textContent=overview;
+  renderRecords();renderDoctorWorkspace();
+}
+function completeCheckin(){readClinicalInputs();addTimeline("Patient checked in");document.getElementById("checkinMsg").innerHTML='<span class="pill good">Check-in saved for this demo session.</span>';updateAll();}
+function generateQuestions(){
+  readClinicalInputs();
+  const qs=smartFollowups(state.chief_complaint,state.hpi);
+  document.getElementById("qList").innerHTML=qs.map((q,i)=>`<div class="card" style="margin:10px 0;padding:14px"><label>Q${i+1}. ${esc(q)}</label><textarea placeholder="Patient response" data-question="${i}"></textarea></div>`).join("");
+  document.getElementById("questions").classList.remove("hidden");
+  updateAll();
+}
+function structureInterview(){
+  readClinicalInputs();state.aiStructured=true;addTimeline("AI case-taking structured");document.getElementById("aiSaved").classList.remove("hidden");updateAll();
+}
+function saveAyush(){readClinicalInputs();addTimeline("AYUSH assessment captured");document.getElementById("ayushMsg").innerHTML='<span class="pill good">AYUSH fields added to the unified record.</span>';updateAll();}
+function grantAccess(){
+  readClinicalInputs();state.consent=true;state.duration=document.getElementById("duration").value;addTimeline(`Consent granted (${state.duration}); patient-selected sharing updated`);
+  document.getElementById("accessStat").textContent="Active";document.getElementById("accessPill").textContent="Temporary access";document.getElementById("accessPill").className="pill good";
+  document.getElementById("accessMsg").innerHTML=`<span class="pill good">Access granted.</span> Selected information is available to the doctor for ${esc(state.duration)}.`;
+  updateAll();
+}
+function revokeAccess(){state.consent=false;addTimeline("Patient revoked access");document.getElementById("accessStat").textContent="Not active";document.getElementById("accessPill").textContent="Patient controlled";document.getElementById("accessPill").className="pill";document.getElementById("accessMsg").innerHTML='<span class="pill warn">Access revoked.</span>';updateAll();}
+function saveDoctorReview(){state.doctor_status=document.getElementById("doctorStatus").value;addTimeline(`Doctor review: ${state.doctor_status}`);updateAll();alert("Status updated to: "+state.doctor_status);}
+function renderRecords(){
+  const list=document.getElementById("recordsList");
+  list.innerHTML=state.records.length?state.records.map((r,i)=>`<div class="record"><div style="flex:1"><b>📄 ${esc(r.name)}</b><div class="muted">${esc(r.source)}</div><textarea id="recText${i}" style="margin-top:8px" oninput="state.records[${i}].text=this.value">${esc(r.text)}</textarea></div><button class="btn danger" onclick="removeRecord(${i})">Remove</button></div>`).join(""):'<div class="note">Upload a sample record to demonstrate document processing.</div>';
+  document.getElementById("recordCount").textContent=state.records.length;document.getElementById("caseRecordCount").textContent=state.records.length;
+  const all=state.records.map(r=>r.text).join("\n");
+  const lines=all.split(/\n/).filter(x=>/\b(?:tablet|tab|capsule|cap|mg|ml|once daily|twice daily|od|bd|tid)\b/i.test(x)).slice(0,8);
+  const ai=document.getElementById("documentAI");
+  if(state.records.length){ai.classList.remove("hidden");document.getElementById("medLines").innerHTML=lines.length?lines.map(x=>`<div class="pill">${esc(x)}</div>`).join(" "):"No medication-like lines detected."}else ai.classList.add("hidden");
+}
+function removeRecord(i){state.records.splice(i,1);addTimeline("Removed record");updateAll();}
+async function processFiles(files){
+  const status=document.getElementById("ocrStatus");status.textContent="Processing selected files…";
+  for(const f of files){
+    if(state.records.some(r=>r.name===f.name))continue;
+    let text="",source="Manual text entry";
+    if(f.type==="text/plain") {text=await f.text();source="Text extraction";}
+    else if(f.type==="application/pdf"){text="PDF uploaded. Browser-only demo stores the file metadata; paste/correct extracted text below.";source="PDF upload — manual correction available";}
+    else if(f.type.startsWith("image/")){text="Image uploaded. Browser-only demo stores the image metadata; OCR may require an external OCR engine in production.";source="Image upload — OCR placeholder";}
+    state.records.push({name:f.name,type:f.type,text,source});
+    addTimeline(`Uploaded record: ${f.name}`);
+  }
+  status.innerHTML='<span class="pill good">Files added to the unified record.</span>';updateAll();
+}
+document.getElementById("recordUpload").addEventListener("change",e=>processFiles([...e.target.files]));
+function startVoice(target){
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){alert("Browser speech recognition is not available here. You can type the text manually.");return;}
+  const r=new SpeechRecognition(), map={English:"en-IN",Hindi:"hi-IN",Telugu:"te-IN"};
+  r.lang=map[state.patient.language]||"en-IN";r.interimResults=false;r.maxAlternatives=1;
+  const status=document.getElementById(target==="complaint"?"voiceComplaintStatus":"voiceHpiStatus");status.textContent="Listening…";
+  r.onresult=e=>{const t=e.results[0][0].transcript;const el=document.getElementById(target);el.value=(el.value.trim()?el.value.trim()+" ":"")+t;readClinicalInputs();addTimeline(`Voice input captured for ${target==="complaint"?"chief complaint":"medical history"}`);status.textContent="Voice converted to text!";updateAll();};
+  r.onerror=e=>status.textContent="Voice input unavailable: "+e.error;r.onend=()=>{if(status.textContent==="Listening…")status.textContent="Ready";};r.start();
+}
+function renderTimeline(){
+  const html=state.timeline.length?state.timeline.slice().reverse().map(x=>`<div class="event"><b>${esc(x.time)}</b><span class="muted">${esc(x.event)}</span></div>`).join(""):'<div class="muted">Actions such as check-in, uploads, consent and doctor review will appear here.</div>';
+  document.getElementById("timeline").innerHTML=html;
+}
+function renderOverviewTimeline(){document.getElementById("overviewTimeline").innerHTML=state.timeline.slice(-5).reverse().map(x=>`<div class="event"><b>${esc(x.time)}</b><span class="muted">${esc(x.event)}</span></div>`).join("")||'<div class="muted">No events yet.</div>';}
+function searchCaseData(){
+  const q=(document.getElementById("searchCase").value||"").toLowerCase().trim(),out=document.getElementById("searchResults");
+  if(!q){out.innerHTML="";return;}
+  const results=[];
+  Object.entries(structuredSummary()).forEach(([k,v])=>{if(k.toLowerCase().includes(q)||String(v).toLowerCase().includes(q))results.push([k,v]);});
+  state.records.forEach(r=>{if(r.name.toLowerCase().includes(q)||r.text.toLowerCase().includes(q))results.push(["Record: "+r.name,r.text.slice(0,500)||"No extracted text"]);});
+  out.innerHTML=results.length?results.map(([k,v])=>`<div class="card"><b>${esc(k)}</b><div class="muted">${esc(v)}</div></div>`).join(""):'<div class="note">No matches in this demo patient data.</div>';
+}
+function generateQR(){
+  const c=document.getElementById("qrCanvas"),ctx=c.getContext("2d"),s=145;
+  ctx.fillStyle="#fff";ctx.fillRect(0,0,s,s);ctx.fillStyle="#111";
+  let seed=JSON.stringify({patient_id:state.patient.abha,name:state.patient.name,emergency_flag:!!detectCritical(state.chief_complaint+" "+state.hpi).length,allergies:state.allergies,medications:state.medications});
+  let n=seed.split("").reduce((a,ch)=>a+ch.charCodeAt(0),0);
+  for(let y=8;y<s-8;y+=5)for(let x=8;x<s-8;x+=5){n=(n*1664525+1013904223)>>>0;if(n%3===0)ctx.fillRect(x,y,4,4);}
+  drawFinder(ctx,8,8);drawFinder(ctx,92,8);drawFinder(ctx,8,92);addTimeline("Basic medical profile QR generated");
+}
+function drawFinder(ctx,x,y){ctx.fillStyle="#111";ctx.fillRect(x,y,35,35);ctx.fillStyle="#fff";ctx.fillRect(x+6,y+6,23,23);ctx.fillStyle="#111";ctx.fillRect(x+12,y+12,11,11);}
+function downloadJSON(){readClinicalInputs();const data=JSON.stringify({...structuredSummary(),timeline:state.timeline},null,2),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:"application/json"}));a.download="cognix_case_sheet.json";a.click();URL.revokeObjectURL(a.href);}
+function renderDoctorWorkspace(){
+  document.getElementById("doctorPatientName").textContent=state.patient.name;document.getElementById("doctorPatientName2").textContent=state.patient.name;
+  document.getElementById("doctorPatientMeta").textContent=`${state.patient.abha} • O+ • ${state.chief_complaint||"Not entered"}`;
+  document.getElementById("doctorPatientId2").textContent=`${state.patient.abha} • ABHA/Patient ID`;
+  document.getElementById("doctorRecordCount").textContent=state.records.length;
+  document.getElementById("doctorConsentPill").textContent=state.consent?"Consent granted":"Consent pending";
+  document.getElementById("doctorConsentPill").className="pill "+(state.consent?"good":"warn");
+  document.getElementById("doctorAccessBadge").textContent=state.consent?"Access active":"Access pending";
+  document.getElementById("doctorAccessBadge").className="pill "+(state.consent?"good":"warn");
+  document.getElementById("doctorExpiry").textContent=state.consent?state.duration:"Awaiting consent";
+  document.getElementById("doctorSummary").innerHTML=summaryHTML(structuredSummary());
+  document.getElementById("doctorAI").textContent=`${state.patient.name} presents with ${state.chief_complaint||"an unspecified complaint"}. HPI: ${state.hpi||"not yet documented"}. Current medicines: ${state.medications||"not entered"}. Allergies: ${state.allergies||"not entered"}. This is a structured intake, not a diagnosis.`;
+  document.getElementById("doctorRecords").innerHTML=state.records.length?state.records.map(r=>`<tr><td>Medical record</td><td>${esc(r.name)}</td><td>${esc(r.source)}</td><td><span class="pill ${state.consent?"good":"warn"}">${state.consent?"Granted":"Pending"}</span></td></tr>`).join(""):'<tr><td colspan="4">No uploaded records.</td></tr>';
+  const a=state.ayush;
+  document.getElementById("doctorAyush").innerHTML=summaryHTML({"Prakriti":a.prakriti,"Vikriti":a.vikriti,"Agni":a.agni,"Koshta":a.koshta,"Ahara-Vihara":a.ahara_vihara||"Not entered","Nidana":a.nidana||"Not entered","Samprapti":a.samprapti||"Not entered","Dashavidha Pariksha":a.dashavidha||"Not entered"});
+}
+function renderDoctorAudit(){document.getElementById("doctorAudit").innerHTML=state.timeline.slice().reverse().map(x=>`<div class="event"><b>${esc(x.time)}</b><span class="muted">${esc(x.event)}</span></div>`).join("")||'<div class="muted">No audit events yet.</div>';}
+function showPage(id,btn){document.querySelectorAll("#patientApp .page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll("#patientApp .nav button").forEach(b=>b.classList.remove("active"));if(btn)btn.classList.add("active");const names={"p-overview":"Patient Overview","p-checkin":"Patient Check-in","p-profile":"My Profile","p-records":"Medical Records + OCR","p-ai":"AI Case-Taking","p-ayush":"AYUSH Mode","p-access":"Consent + Doctor Review","p-case":"Unified Case Sheet","p-timeline":"Timeline / Search"};document.getElementById("pTitle").textContent=names[id]||"Patient Portal";updateAll();}
+function showDPage(id,btn){document.querySelectorAll("#doctorApp .page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll("#doctorApp .nav button").forEach(b=>b.classList.remove("active"));if(btn)btn.classList.add("active");const names={"d-overview":"Doctor Overview","d-patients":"Patients","d-case":"Unified Case Sheet","d-records":"Patient Records","d-ayush":"AYUSH Assessment","d-audit":"Access Audit"};document.getElementById("dTitle").textContent=names[id]||"Doctor Workspace";renderDoctorWorkspace();renderDoctorAudit();}
+function hideAuth(){document.getElementById("auth").classList.add("hidden")}
+function showAuth(){document.getElementById("auth").classList.remove("hidden");document.getElementById("patientApp").classList.add("hidden");document.getElementById("doctorApp").classList.add("hidden")}
+function only(id){["roleScreen","patientLogin","patientSignup","doctorLogin"].forEach(x=>document.getElementById(x).classList.add("hidden"));document.getElementById(id).classList.remove("hidden")}
+function backRoles(){only("roleScreen")}function showPatientLogin(){only("patientLogin")}function showDoctorLogin(){only("doctorLogin")}function showSignup(){only("patientSignup")}
+function patientSignIn(){let a=document.getElementById("aadhaar").value.trim(),m=document.getElementById("patientMsg");if(a.length!==12){m.innerHTML='<span class="pill bad">Enter a 12-digit demo Aadhaar</span>';return}hideAuth();document.getElementById("patientApp").classList.remove("hidden");updateAll();}
+function checkAadhaar(){let a=document.getElementById("signupAadhaar").value.trim(),m=document.getElementById("signupMsg");if(a.length!==12){m.innerHTML='<span class="pill bad">Enter a 12-digit demo Aadhaar</span>';return}m.innerHTML='<span class="pill good">No Cognix account found in this demo.</span> <span class="muted">OTP sent to the linked mobile number.</span>';document.getElementById("otpBox").classList.remove("hidden");}
+function completeSignup(){let o=document.getElementById("otp").value.trim(),p=document.getElementById("newPass").value,p2=document.getElementById("newPass2").value;if(o!=="123456"){alert("Demo OTP is 123456");return}if(!p||p!==p2){alert("Passwords do not match");return}hideAuth();document.getElementById("patientApp").classList.remove("hidden");addTimeline("Cognix account created successfully");updateAll();}
+function doctorSignIn(){let id=document.getElementById("doctorId").value.trim(),m=document.getElementById("doctorMsg");if(!id){m.innerHTML='<span class="pill bad">Enter a Doctor ID</span>';return}hideAuth();document.getElementById("doctorApp").classList.remove("hidden");renderDoctorWorkspace();}
+function logout(){document.getElementById("patientApp").classList.add("hidden");document.getElementById("doctorApp").classList.add("hidden");showAuth();backRoles();}
+window.addEventListener("DOMContentLoaded",()=>{syncInputs();updateAll();renderTimeline();renderDoctorAudit();generateQR();});
+</script>
+
+</body>
+</html>
